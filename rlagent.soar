@@ -1,0 +1,199 @@
+# File che contiene le produzioni propose/apply delle azioni
+# che l'agente può compiere
+
+sp {propose*move
+   (state <s> ^name escape 
+      ^object <o1> <o2>
+      ^close {<o2> <> <o1>}
+      -^close <o1>
+      -^taken <o1>)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name move
+      ^to <o1>
+      ^from <o2>)
+}
+
+sp {apply*move
+   (state <s> ^name escape 
+      ^operator <op>
+      ^object <o1> <o2>
+      ^close {<> <o1> <o2>}
+      ^last-action <a>)
+   (<op> ^name move
+         ^to <o1>
+         ^from <o2>)
+   (<o1> ^name <n>)
+   (<o2> ^name <n2>)
+  -->
+   (<s> ^close <o2> - <o1> +)
+   (<s> ^last-action <a> - move)
+   # (write (crlf) |Moved from | <n2> | to | <n>)
+}
+
+sp {propose*take
+   (state <s> ^name escape
+      ^close <obj>
+      ^object <obj>
+      ^hand <h>
+      -^taken <obj>)
+   (<h> ^holds nil)
+   -(<obj> ^name finestra)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name take
+      ^object <obj>
+      ^hand <h>)
+}
+
+sp {apply*take
+   (state <s> ^operator <op>
+      ^close <obj>
+      -^taken <obj>
+      ^last-action <a>)
+   (<op> ^name take
+      ^object <obj>
+      ^hand <h>)
+   (<h> ^holds nil)
+   (<obj> ^name <n>)
+  -->
+   (<s> ^taken <obj>)
+   (<h> ^holds nil - <obj>)
+   (<s> ^last-action <a> - take)
+   # (write (crlf) |Ho preso in mano | <n>)
+}
+
+sp {propose*combine
+   (state <s> ^name escape
+      ^hand <h1> <h2>
+      ^combinations <c>)
+   (<h1> ^holds <o1> ^is left)
+   (<h2> ^holds <o2> ^is right)
+   (<c> ^ingredient <o1> {<o2> <> <o1>})
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name combine
+      ^object <c>
+      ^ingredient <o1> <o2>)
+}
+
+sp {apply*combine
+   (state <s> ^operator <op>
+      ^hand <h1> <h2>
+      ^last-action <a>)
+   (<op> ^name combine
+      ^object <c>
+      ^ingredient <o1> <o2>)
+   (<c> ^name <n>)
+   (<h1> ^holds <o1> ^is left)
+   (<h2> ^holds <o2> ^is right)
+  -->
+   (<s> ^object <c> ^taken <c>)
+   (<h1> ^holds <o1> - <c>)
+   (<h2> ^holds <o2> - nil)
+   (<s> ^last-action <a> - combine)
+   (write (crlf) |Ho creato | <n>)
+}
+
+sp {propose*utilize*fionda
+   (state <s> ^name escape
+      ^hand <h1> <h2>
+      ^object <w>)
+   (<w> ^name finestra ^broken no)
+   (<h1> ^holds (<c> ^name fionda))
+   (<h2> ^holds.name pietre)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name utilize
+      ^object <c>)
+}
+
+sp {apply*utilize*fionda
+   (state <s> ^operator <op>
+      ^object <w>
+      ^last-action <a>
+      ^hand (<h> ^holds <obj>))
+   (<obj> ^name pietre)
+   (<op> ^name utilize ^object <c>)
+   (<w> ^name finestra ^broken no)
+   (<c> ^name fionda)
+  -->
+   (<w> ^broken no -)
+   (<w> ^broken (ifeq (rand-int 5) 1 yes no))
+   (<h> ^holds <obj> - nil)
+   (<s> ^taken <obj> -)
+   (<s> ^last-action <a> - utilize-fionda)
+   # (write (crlf) |Ho provato a colpire la finestra|)
+}
+
+sp {propose*utilize*tronco
+   (state <s> ^name escape
+      ^hand.holds (<t> ^name tronco)
+      ^object <t>
+      ^close.name finestra)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name utilize
+      ^object <t>)
+}
+
+sp {apply*utilize*tronco
+   (state <s> ^operator <op>
+      ^close (<w> ^name finestra)
+      ^height <hta>
+      ^hand (<h> ^holds <t>)
+      ^last-action <a>)
+   (<op> ^name utilize
+      ^object <t>)
+   (<t> ^name tronco ^height <htt>)
+  -->
+   (<s> ^height <hta> -)
+   (<s> ^height (+ <hta> <htt>))
+   (<h> ^holds <t> - nil)
+   (<s> ^last-action <a> - utilize-tronco)
+   # (write (crlf) |Ho posizionato un tronco|)
+}
+
+sp {propose*escape
+   (state <s> ^name escape
+              ^object <w>
+              ^height [<ht> 3.5])
+   (<w> ^name finestra ^broken yes)
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name escape)
+}
+
+sp {apply*escape
+   (state <s> ^name escape
+              ^operator <op>)
+   (<op> ^name escape)
+  -->
+   (<s> ^escaped yes)
+}
+
+gp {propose*letgo
+   (state <s> ^name escape
+      ^taken <obj>
+      ^hand (<h> ^holds <obj>))
+   (<obj> ^name [elastico rametto pietre])
+  -->
+   (<s> ^operator <op>)
+   (<op> ^name letgo
+      ^object <obj>
+      ^hand <h>)
+}
+
+sp {apply*letgo
+   (state <s> ^name escape
+      ^last-action <a>
+      ^operator <op>)
+   (<op> ^name letgo
+      ^object (<obj> ^name <n>)
+      ^hand <h>)
+  -->
+   (<h> ^holds <obj> - nil)
+   (<s> ^taken <obj> -)
+   (<s> ^last-action <a> - letgo)
+   # (write (crlf) |Ho messo giù | <n>)
+}

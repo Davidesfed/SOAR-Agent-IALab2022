@@ -1,0 +1,50 @@
+# Questo file contiene le produzioni che regolano il comportamento dell'ambiente
+
+sp {propose-space*initialize-escape
+   (state <s> ^superstate nil
+             -^impasse)
+  -->
+   (<s> ^name escape
+        ^object <o1> <o2> <o3> <w> <t1> <t2> # lista degli oggetti presenti nel mondo
+        ^close <o1> # lista degli oggetti vicini
+        ^hand <h1> <h2> # mani dell'agente
+        ^combinations <c1> <c2> <c3> # lista di combinazioni possibili
+        ^height 1.5 # altezza massima raggiungibile dall'agente
+        ^last-action none)
+   # Mani dell'agente, inizialmente vuote
+   (<h1> ^holds nil ^is left)
+   (<h2> ^holds nil ^is right)
+   # Oggetti e combinazioni
+   (<o1> ^name elastico)
+   (<o2> ^name rametto)
+   (<o3> ^name pietre)
+   (<c1> ^ingredient <o1> <o2> ^name fionda ^reward +1)
+   (<c2> ^ingredient <o3> <o2> ^name rametto-pietre ^reward -1)
+   (<c3> ^ingredient <o1> <o3> ^name elastico-pietre ^reward -1)
+   (<w> ^name finestra ^height 3.5 ^broken no)
+   (<t1> ^name tronco ^height 1.0)
+   (<t2> ^name tronco ^height 1.0)
+   (write (crlf) |Initialization done.|)
+}
+
+sp {elaborate*done*failed*non-broken
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^object <c> <w>
+              ^hand <h>
+              ^combinations <c>)
+   (<h> ^holds <c>)
+   (<c> ^name <> fionda)
+   (<w> ^name finestra ^broken no)
+  -->
+   (write (crlf) |Non sei riuscito a fuggire.|)
+   (halt)
+}
+
+sp {elaborate*done*success
+   (state <s> ^name escape
+              ^escaped yes)
+  -->
+  (write (crlf) |Sei riuscito a fuggire!| (crlf))
+  (halt)
+}

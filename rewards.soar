@@ -1,0 +1,74 @@
+# File che contiene tutte le produzioni che assegnano reward
+
+sp {elaborate*reward*move
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^last-action move)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value -0.5)
+}
+
+sp {elaborate*reward*letgo
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^last-action letgo)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value -0.5)
+}
+
+sp {elaborate*reward*combination
+   (state <s> ^name escape
+      ^reward-link <r>
+      ^hand.holds <c>
+      ^combinations <c>
+      ^last-action combine)
+   (<c> ^reward <d-reward>)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value <d-reward>)
+}
+
+sp {elaborate*reward*utilize-tronco
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^height [2.5 3.5]
+              ^last-action utilize-tronco)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 1)
+}
+
+sp {elaborate*reward*utilize-fionda
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^last-action utilize-fionda)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 1)
+}
+
+sp {elaborate*reward*done*success
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^escaped yes)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value 2)
+}
+
+sp {elaborate*reward*done*failed
+   (state <s> ^name escape
+              ^reward-link <r>
+              ^object <c> <w>
+              ^hand <h>
+              ^combinations <c>)
+   (<h> ^holds <c>)
+   (<c> ^name <> fionda)
+   (<w> ^name finestra ^broken no)
+  -->
+   (<r> ^reward <rr>)
+   (<rr> ^value -2)
+}
+

@@ -1,0 +1,70 @@
+# File che contiene tutte le RL-rules
+
+gp {generate*rl-rule*move
+   (state <s> ^operator <op> +)
+   (<op> ^name move
+      ^to.name [elastico pietre rametto finestra tronco]
+      ^from.name [elastico pietre rametto finestra tronco])
+  -->
+  (<s> ^operator <op> = 0)
+}
+
+gp {generate*rl-rule*take
+   (state <s> ^operator <op> +)
+   (<op> ^name take
+      ^object.name [elastico pietre rametto tronco]
+      ^hand.is [left right])
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+gp {generate*rl-rule*letgo
+   (state <s> ^operator <op> +)
+   (<op> ^name letgo
+      ^object.name [pietre rametto elastico]
+      ^hand.is [left right])
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {rl-rule*combine*fionda
+   (state <s> ^operator <op> +)
+   (<op> ^name combine
+      ^object (<c> ^name fionda)
+      ^ingredient (<o1> ^name elastico) (<o2> ^name rametto))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {rl-rule*combine*rametto-pietre
+   (state <s> ^operator <op> +)
+   (<op> ^name combine
+      ^object.name rametto-pietre
+      ^ingredient (<ob1> ^name pietre) (<ob2> ^name rametto))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {rl-rule*combine*elastico-pietre
+   (state <s> ^operator <op> +)
+   (<op> ^name combine
+      ^object.name elastico-pietre
+      ^ingredient (<o1> ^name elastico) (<o2> ^name pietre))
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+gp {generate*rl-rule*utilize
+   (state <s> ^operator <op> +)
+   (<op> ^name utilize
+      ^object.name [tronco fionda])
+  -->
+   (<s> ^operator <op> = 0)
+}
+
+sp {rl-rule*escape
+   (state <s> ^operator <op> +)
+   (<op> ^name escape)
+  -->
+   (<s> ^operator <op> = 0)
+}
