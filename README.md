@@ -1,22 +1,14 @@
 # Progetto ESCAPE
-Intelligenza Artificiale e Laboratorio, a.a. 21/22
-
-Davide Mauri, Giordano Scarso
 
 ## Esecuzione del programma
 
 Il programma è diviso in diversi file, ciascuno dei quali contiene un insieme ben preciso di produzioni, la cui funzione generica è specificata dal nome del file stesso. In particolare:
-- __init.soar__ contiene i settings del Reinforcement Learning e il caricamento degli altri file;
 - __ambient.soar__ contiene le produzioni che specificano il comportamento dell'ambiente, in particolare la ``propose-space`` iniziale e le produzioniche regolano la terminazione di un singolo episodio
 - __rlagent.soar__ contiene invece le produzioni propose/apply delle azioni che può compiere l'agente
 - __rlrules.soar__ contiene le regole RL che calcolano i Q-value relativi alle azioni dell'agente
 - __rewards.soar__ contiene le produzioni di elaborazione che assegnano ricompense alle azioni compiute dall'agente
 
-Per caricare il programma nella memoria di SOAR è sufficiente dare il seguente comando nel SoarJavaDebugger.
-```
-load file init.soar
-```
-A questo punto un comando ``run`` permette l'esecuzione di un singolo episodio. Se si vuole monitorare l'evoluzione dei Q-value assegnati ad ogni regola RL, è consigliato, in uno dei terminali a lato, il comando ``print --all``.
+Per eseguire il programma si è scelta come learning policy il Q-Learning, con selezione delle azioni tramite strategia epsilon greedy.
 
 
 ## Ipotesi di lavoro
